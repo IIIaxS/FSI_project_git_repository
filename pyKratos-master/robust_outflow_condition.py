@@ -34,7 +34,7 @@ class RobustOutflowCondition:
             value[1] += N[i] * self.geometry[i].GetSolutionStepValue(var_y, step)
         return value
                 
-    def CalculateLocalSystem(self,ProcessInfo):
+    def CalculateLocalSystem(self, im_useless):
         nnodes = self.geometry.GetNumberOfNodes()
         dofs_per_node = self.GetDofsPerNode()
         mat_size = nnodes*dofs_per_node # mat_size = 4
@@ -88,7 +88,7 @@ class RobustOutflowCondition:
             RHS[3] += 0.5*squared_velocity_module*S*n[1]*N[1]*A # v2
 
         return [LHS, RHS]
-
+##        ???
         return C
 
     # this function returns a list with the node and unkowns to be solved for
@@ -98,10 +98,6 @@ class RobustOutflowCondition:
         unknowns.append(Dof(self.geometry[0], VELOCITY_Y))
         unknowns.append(Dof(self.geometry[1], VELOCITY_X))
         unknowns.append(Dof(self.geometry[1], VELOCITY_Y))
-"""
-        unknowns.append(Dof(self.geometry[0], PRESSURE))
-        unknowns.append(Dof(self.geometry[1], PRESSURE))
-"""
         return unknowns
 
     def EquationId(self):
@@ -110,10 +106,6 @@ class RobustOutflowCondition:
         equation_ids.append(self.geometry[0].EquationId(VELOCITY_Y))
         equation_ids.append(self.geometry[1].EquationId(VELOCITY_X))
         equation_ids.append(self.geometry[1].EquationId(VELOCITY_Y))
-"""
-        equation_ids.append(self.geometry[0].EquationId(PRESSURE))
-        equation_ids.append(self.geometry[1].EquationId(PRESSURE))
-"""
         return equation_ids
 
     def GetValues(self, step=0):
@@ -122,10 +114,6 @@ class RobustOutflowCondition:
         values[1] = self.geometry[0].GetSolutionStepValue(VELOCITY_Y, step)
         values[2] = self.geometry[1].GetSolutionStepValue(VELOCITY_X, step)
         values[3] = self.geometry[1].GetSolutionStepValue(VELOCITY_Y, step)
-"""
-        values[4] = self.geometry[0].GetSolutionStepValue(PRESSURE, step)
-        values[5] = self.geometry[1].GetSolutionStepValue(PRESSURE, step)
-"""
         return values
 
 
