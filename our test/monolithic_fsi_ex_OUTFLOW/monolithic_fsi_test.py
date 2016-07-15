@@ -5,7 +5,7 @@ print(sys.path)
 
 from numpy import *
 from pyKratos import *
-
+print("cazzo")
 #example = "closed" 
 example = "gravity"
 
