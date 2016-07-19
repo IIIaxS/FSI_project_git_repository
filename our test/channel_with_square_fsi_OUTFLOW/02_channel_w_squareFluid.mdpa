@@ -2992,7 +2992,7 @@ Begin Elements VMS2D   // GUI group identifier: fluid
 End Elements
 
 
-Begin Conditions neumann_face_condition_2d_bossak
+Begin Conditions robust_outflow_condition
          1    0       1028       1026
          2    0       1026       1025
          3    0       1025       1021
@@ -3099,7 +3099,7 @@ Begin Conditions neumann_face_condition_2d_bossak
        104    0        577        595
 End Conditions
 
-Begin NodalData PRESSURE robust_outflow_conditionlet
+Begin NodalData PRESSURE Outlet
          1    1   0.000000
          3    1   0.000000
          4    1   0.000000
