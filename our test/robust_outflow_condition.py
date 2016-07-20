@@ -64,7 +64,7 @@ class RobustOutflowCondition:
             # last step: in k-step of Newton-Raphson method, the k-1 values are
             # needed (so the last ones since the k-step values are to be
             # computed).
-            step = -1 # -1 index => last value
+            step = 1 # -1 index => last value
             
             # k-1-step values of velocity at the current Gauss point
             [u, v] = self.GetVectorValueOnGauss(VELOCITY_X, VELOCITY_Y, N, step)
@@ -73,7 +73,7 @@ class RobustOutflowCondition:
             squared_velocity_module = u**2 +v**2
 
             # normal vector
-            n = [0, 1]
+            n = [1, 0]
 
             # u_vector * n (dot product)
             projected_vel = u * n[0] + v * n[1] 
@@ -86,6 +86,32 @@ class RobustOutflowCondition:
             RHS[1] += 0.5*squared_velocity_module*S*n[1]*N[0]*A # v1
             RHS[2] += 0.5*squared_velocity_module*S*n[0]*N[1]*A # u2
             RHS[3] += 0.5*squared_velocity_module*S*n[1]*N[1]*A # v2
+
+        # node 1
+        n = [1, 0]
+        step=0
+        u = self.geometry[0].GetSolutionStepValue(VELOCITY_X, step)
+        v = self.geometry[0].GetSolutionStepValue(VELOCITY_Y, step)
+        projected_vel = u * n[0] + v * n[1]
+        S=0.5*(1-tanh( projected_vel / (U_0*delta) ) )
+
+        self.geometry[0].SetSolutionStepValue(OUTLET_PRESSURE, step, S)
+        self.geometry[0].SetSolutionStepValue(NORMAL_X, step, n[0])
+        self.geometry[0].SetSolutionStepValue(NORMAL_Y, step, n[1])
+
+        # node 2
+        n = [1, 0]
+        u = self.geometry[1].GetSolutionStepValue(VELOCITY_X, step)
+        v = self.geometry[1].GetSolutionStepValue(VELOCITY_Y, step)
+        projected_vel = u * n[0] + v * n[1]
+        S=0.5*(1-tanh( projected_vel / (U_0*delta) ) )
+
+        
+        self.geometry[1].SetSolutionStepValue(OUTLET_PRESSURE, step, S)
+        self.geometry[1].SetSolutionStepValue(NORMAL_X, step, n[0])
+        self.geometry[1].SetSolutionStepValue(NORMAL_Y, step, n[1])
+
+        
 
         return [LHS, RHS]
 ##        ???

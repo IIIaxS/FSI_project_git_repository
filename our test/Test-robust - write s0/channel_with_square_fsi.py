@@ -24,9 +24,9 @@ solution_step_variables = [
     EXTERNAL_FORCE_X,
     EXTERNAL_FORCE_Y,
     IS_STRUCTURE,
-	OUTLET_PRESSURE,
-	NORMAL_X,
-	NORMAL_Y
+    OUTLET_PRESSURE,
+    NORMAL_X,
+    NORMAL_Y
 ]
 
 property_list = {
@@ -152,20 +152,20 @@ model_part.CloneTimeStep(2*dt)
 
 for i in range(3,nsteps):
     time = i*dt
-	model_part.CloneTimeStep(time)
-	print("time = ", time)
-	
-	strategy.Solve()
-	
-	#check if this step results are written
-	if(step >= outputStep):
-	    gid_io_input.WriteNodalResults(PRESSURE, model_part.NodeIterators(), time)
-		gid_io_input.WriteNodalResults(VELOCITY, model_part.NodeIterators(), time)
-		gid_io_input.WriteNodalResults(OUTLET_PRESSURE,model_part.NodeIterators(),time)
-		gid_io_input.WriteNodalResults(NORMAL, model_part.NodeIterators(),time)
-		step = 0
-	else:
-		step = step + 1
+    model_part.CloneTimeStep(time)
+    print("time = ", time)
+
+    strategy.Solve()
+
+    #check if this step results are written
+    if(step >= outputStep):
+        gid_io_input.WriteNodalResults(PRESSURE, model_part.NodeIterators(), time)
+        gid_io_input.WriteNodalResults(VELOCITY, model_part.NodeIterators(), time)
+        gid_io_input.WriteNodalResults(OUTLET_PRESSURE,model_part.NodeIterators(),time)
+        gid_io_input.WriteNodalResults(NORMAL, model_part.NodeIterators(),time)
+        step = 0
+    else:
+        step = step + 1
         
     # WEI BEGIN =========================================
     # fluid force
