@@ -23,6 +23,7 @@ class RobustOutflowCondition:
         self.Id = Id
         self.prop = prop
         self.geometry = geometry
+        self.normal = None
 
     def GetDofsPerNode(self):
         return 2
@@ -35,6 +36,10 @@ class RobustOutflowCondition:
         return value
                 
     def CalculateLocalSystem(self,ignore_me):
+        if not self.normal:
+            raise(Exception("Normal direction of RobustOutflow BC not defined"))
+        else:
+            n = self.normal
         nnodes = self.geometry.GetNumberOfNodes()
         dofs_per_node = self.GetDofsPerNode()
         mat_size = nnodes*dofs_per_node # mat_size = 4
@@ -72,9 +77,6 @@ class RobustOutflowCondition:
             # squared module of velocity at the current Gauss point
             squared_velocity_module = u**2 +v**2
 
-            # normal vector
-            n = [1, 0]
-
             # u_vector * n (dot product)
             projected_vel = u * n[0] + v * n[1] 
 
@@ -87,8 +89,8 @@ class RobustOutflowCondition:
             RHS[2] += 0.5*squared_velocity_module*S*n[0]*N[1]*A # u2
             RHS[3] += 0.5*squared_velocity_module*S*n[1]*N[1]*A # v2
 
+        # ----------- testing purpose only -----------
         # node 1
-        n = [1, 0]
         step=0
         u = self.geometry[0].GetSolutionStepValue(VELOCITY_X, step)
         v = self.geometry[0].GetSolutionStepValue(VELOCITY_Y, step)
@@ -100,7 +102,6 @@ class RobustOutflowCondition:
         self.geometry[0].SetSolutionStepValue(NORMAL_Y, step, n[1])
 
         # node 2
-        n = [1, 0]
         u = self.geometry[1].GetSolutionStepValue(VELOCITY_X, step)
         v = self.geometry[1].GetSolutionStepValue(VELOCITY_Y, step)
         projected_vel = u * n[0] + v * n[1]
@@ -110,8 +111,7 @@ class RobustOutflowCondition:
         self.geometry[1].SetSolutionStepValue(OUTLET_PRESSURE, step, S)
         self.geometry[1].SetSolutionStepValue(NORMAL_X, step, n[0])
         self.geometry[1].SetSolutionStepValue(NORMAL_Y, step, n[1])
-
-        
+        # ----------- testing purpose only -----------
 
         return [LHS, RHS]
 ##        ???
@@ -142,4 +142,29 @@ class RobustOutflowCondition:
         values[3] = self.geometry[1].GetSolutionStepValue(VELOCITY_Y, step)
         return values
 
+    def SetNormal(self, node3):
+        # construct a vector normal to line2d element
+        node1 = self.geometry[0]
+        node2 = self.geometry[1]
+        [x1, y1] = node1.coordinates
+        [x2, y2] = node2.coordinates
+        normal = [y2 - y1, x1 - x2] # [delta_y, - delta_x]
+        # scale it to unit vector
+        [x, y] = normal
+        length = sqrt(x**2 + y**2)
+        normal = [x/length, y/length]
 
+        # construct an inward pointing vector
+        [x3, y3] = node3.coordinates
+        inward_vec = [x3 - x1, y3 - y1]
+
+        # check through a dot product wheter the normal vector is pointing inward
+        # or outward
+        dot_product = inward_vec[0] * normal[0] + inward_vec[1] * normal[1]
+        if dot_product > 0:
+            # normal is pointing inward, take the opposite vector
+            self.normal = [-normal[0], -normal[1]]
+        else:
+            # normal is pointing outward
+            self.normal = normal
+            

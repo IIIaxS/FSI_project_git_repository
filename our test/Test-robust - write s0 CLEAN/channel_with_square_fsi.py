@@ -58,9 +58,7 @@ gid_io_input.ReadModelPart(model_part)
 print("LOOP OVER CONDITIONS-LOOP OVER CONDITIONS-LOOP OVER CONDITIONS-LOOP OVER CONDITIONS-LOOP OVER CONDITIONS")
 import robust_outflow_condition
 for condition in model_part.ConditionIterators():
-##    print(type(condition))
     if isinstance(condition, robust_outflow_condition.RobustOutflowCondition):
-        print('found a condition##################')
         node1 = condition.geometry[0]
         node2 = condition.geometry[1]
         for element in model_part.ElementIterators():
@@ -122,44 +120,6 @@ u = []
 phi = []
 t = []
 # WEI END ===========================================
-
-# DIRICHLET BC
-for node_id, node in model_part.Nodes.items():
-    x = node.coordinates[0]
-    y = node.coordinates[1]
-    if abs(x - (-10)) < 1e-4:
-        print("INLET node_id: ", node_id, ", x = ", node.coordinates[0], ", y = ", node.coordinates[1])
-        node.Fix(VELOCITY_X)
-        node.Fix(VELOCITY_Y)
-        node.SetSolutionStepValue(VELOCITY_X,0,30.0)
-    if abs(y - (-10)) < 1e-4:
-        print("WALL node_id: ", node_id, ", x = ", node.coordinates[0], ", y = ", node.coordinates[1])
-        node.Fix(VELOCITY_X)
-        node.Fix(VELOCITY_Y)
-    if abs(y - (10)) < 1e-4:
-        print("WALL node_id: ", node_id, ", x = ", node.coordinates[0], ", y = ", node.coordinates[1])
-        node.Fix(VELOCITY_X)
-        node.Fix(VELOCITY_Y)
-    if x < 0.5+1e-4 and x > -0.5-1e-4 and y < 0.5+1e-4 and y > -0.5-1e-4:
-        print("Object node_id: ", node_id, ", x = ", node.coordinates[0], ", y = ", node.coordinates[1])
-        node.Fix(VELOCITY_X)
-        node.Fix(VELOCITY_Y)
-# OUTFLOW BC
-print("Start conditions outflow")
-outflow_node_list = []
-for node_id, node in model_part.Nodes.items():
-    x = node.coordinates[0]
-    y = node.coordinates[1]
-    if abs(x - 1.5) < 1e-4:
-        outflow_node_list.append([node_id, y])
-#outflow_node_list.sort(key=lambda r: r[1])
-#n_outlfow_nodes = len(outflow_node_list)
-#for i in range(n_outlfow_nodes-1):
-#    node1 = model_part.Nodes[i]
-#    node2 = model_part.Nodes[i+1]
-#    print(i+1, "     0     ", node1.Id, "     ", node2.Id)
-#import sys
-#sys.exit()
 
 #to be consistend with kratos results
 model_part.CloneTimeStep(dt)

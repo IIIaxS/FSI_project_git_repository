@@ -161,6 +161,9 @@ class GidIONS:
                     if ((words[2] == "PRESSURE") and (words[3] =="Outlet")):
                         print('in pres outlet')
                         self.ReadNodalDataOutlet(words[2],model_part)
+
+                elif line.find("Begin") != -1:
+                    print("\n\nIGNORED LINE:", line, "###############################")
           
     def ReadWords(self,line):
         i  = line.find("//")
