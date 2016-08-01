@@ -71,7 +71,7 @@ strategy.OpenFile(dragLiftFile)
 mesh_name = "test"
 gid_io_input.WriteMesh(model_part, mesh_name)
 dt = 0.01
-nsteps = 50 #2000
+nsteps = 200 #2000
 outputStep = 10
 step = 1
 
